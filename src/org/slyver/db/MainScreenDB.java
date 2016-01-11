@@ -5,7 +5,6 @@
  */
 package org.slyver.db;
 
-import datechooser.beans.DateChooserCombo;
 import java.sql.SQLException;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
@@ -16,7 +15,6 @@ import static org.slyver.db.oracledb.sql;
 import static org.slyver.db.oracledb.statement;
 import org.slyver.ui.MainScreenUI;
 import static org.slyver.ui.MainScreenUI.dynamicTable;
-import static datechooser.beans.DateChooserVisual.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFormattedTextField;

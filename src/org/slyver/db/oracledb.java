@@ -25,7 +25,7 @@ public class oracledb {
     
     public oracledb() throws SQLException {
         
-        oracledb = DriverManager.getConnection( "jdbc:oracle:thin:@mail.gruamazonas.com:1521:laperla","contdoc","contdoc");
+        oracledb = DriverManager.getConnection( "jdbc:oracle:thin:@xxx:xx:xx","xx","xx");
         statement = oracledb.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE); 
         
     }

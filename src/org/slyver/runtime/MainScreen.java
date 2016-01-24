@@ -30,6 +30,10 @@ public class MainScreen {
          new MainScreenDB().SaveTableDataDB(this.getTableData(MainScreenUI.dynamicTable), Report);
      }
      
+     public void GenerateSql(String Report) throws SQLException{
+         new MainScreenDB().GenerateSqlDB(Report);
+     }
+     
     public Object[][] getTableData (JTable table) {
         DefaultTableModel dtm = (DefaultTableModel) table.getModel();
         int nRow = dtm.getRowCount(), nCol = dtm.getColumnCount();

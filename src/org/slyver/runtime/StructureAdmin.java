@@ -21,8 +21,9 @@ public class StructureAdmin {
     public void AdminStatus() throws SQLException{
         
         int adminStatus = LoginDb.userlvl;
+        int adminEmp = LoginDb.useremp;
         
-        if(adminStatus == 1){
+        if(adminStatus == 1 && adminEmp == 0){
             
             new StructureAdminDB().AdminStatusDB();
             

@@ -8,7 +8,6 @@ package org.slyver.ui;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import org.slyver.db.LoginDb;
 import org.slyver.runtime.MainScreen;
@@ -21,10 +20,14 @@ public class MainScreenUI extends javax.swing.JFrame {
 
     /**
      * Creates new form MainScreen
+     * @throws java.sql.SQLException
      */
+    
+    FilterUI FormFilter = new FilterUI();
+    
     public MainScreenUI() throws SQLException {
         initComponents();
-        new MainScreen().ReportsLists();
+        new MainScreen().ReportsLists();   
     }
 
     /**
@@ -40,13 +43,9 @@ public class MainScreenUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         dynamicTable = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
-        PagLeft = new javax.swing.JButton();
-        PagRight = new javax.swing.JButton();
-        CounterPag = new javax.swing.JLabel();
-        PagRight1 = new javax.swing.JButton();
-        PagLeft1 = new javax.swing.JButton();
         SaveReport = new javax.swing.JButton();
         RepUpdate = new javax.swing.JButton();
+        filterWindow = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         adminUI = new javax.swing.JMenuItem();
@@ -57,6 +56,11 @@ public class MainScreenUI extends javax.swing.JFrame {
         ReportsList.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 ReportsListItemStateChanged(evt);
+            }
+        });
+        ReportsList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ReportsListActionPerformed(evt);
             }
         });
 
@@ -72,20 +76,6 @@ public class MainScreenUI extends javax.swing.JFrame {
 
         jLabel2.setText("Seleccionar Reporte");
 
-        PagLeft.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        PagLeft.setText("<<");
-
-        PagRight.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        PagRight.setText(">>");
-
-        CounterPag.setText("0-0");
-
-        PagRight1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        PagRight1.setText(">|");
-
-        PagLeft1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        PagLeft1.setText("|<");
-
         SaveReport.setText("Guardar Datos");
         SaveReport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -97,6 +87,13 @@ public class MainScreenUI extends javax.swing.JFrame {
         RepUpdate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 RepUpdateActionPerformed(evt);
+            }
+        });
+
+        filterWindow.setText("Filtrar Contendo");
+        filterWindow.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterWindowActionPerformed(evt);
             }
         });
 
@@ -121,26 +118,17 @@ public class MainScreenUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 699, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(13, 13, 13)
                         .addComponent(ReportsList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(RepUpdate)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(SaveReport)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(filterWindow)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(PagLeft1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PagLeft, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(CounterPag)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PagRight)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(PagRight1)))
+                        .addComponent(SaveReport)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -150,18 +138,11 @@ public class MainScreenUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ReportsList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
-                    .addComponent(RepUpdate))
+                    .addComponent(RepUpdate)
+                    .addComponent(filterWindow)
+                    .addComponent(SaveReport))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(SaveReport)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(PagLeft)
-                        .addComponent(PagRight)
-                        .addComponent(CounterPag)
-                        .addComponent(PagRight1)
-                        .addComponent(PagLeft1)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -212,6 +193,15 @@ public class MainScreenUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_RepUpdateActionPerformed
 
+    private void ReportsListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReportsListActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ReportsListActionPerformed
+
+    private void filterWindowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterWindowActionPerformed
+        // TODO add your handling code here:
+        FormFilter.setVisible(true);
+    }//GEN-LAST:event_filterWindowActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -253,16 +243,12 @@ public class MainScreenUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel CounterPag;
-    private javax.swing.JButton PagLeft;
-    private javax.swing.JButton PagLeft1;
-    private javax.swing.JButton PagRight;
-    private javax.swing.JButton PagRight1;
     private javax.swing.JButton RepUpdate;
     public static javax.swing.JComboBox ReportsList;
     private javax.swing.JButton SaveReport;
     private javax.swing.JMenuItem adminUI;
     public static javax.swing.JTable dynamicTable;
+    private javax.swing.JButton filterWindow;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;

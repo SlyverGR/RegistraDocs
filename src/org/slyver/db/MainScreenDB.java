@@ -18,6 +18,7 @@ import static org.slyver.ui.MainScreenUI.dynamicTable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFormattedTextField;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  *
@@ -39,7 +40,7 @@ public class MainScreenDB {
                 
         ) {
     
-            Class[] types = Tipos(Report);
+            Class[] types = Tipos(Report, false);
             
             boolean[] canEdit = Editable(Report);
 
@@ -163,7 +164,7 @@ public class MainScreenDB {
         
     }
     
-    public Class[] Tipos(String Report) throws SQLException{
+    public Class[] Tipos(String Report, Boolean viewT) throws SQLException{
         
         sql = "SELECT NOMBRE_COLUMNA FROM GEN_COLUMNAS WHERE NOMBRE_TABLA = '"+Report+"' ORDER BY ORDEN ASC";
         rs = statement.executeQuery(sql);
@@ -185,44 +186,47 @@ public class MainScreenDB {
         
         while(rs.next()){
             
-            if("Combo".equals(rs.getString(1).substring(0, 5))){
-                
-               switcher = "Combo";
-                
-            }else{
-                
-               switcher = rs.getString(1);
-               
-            }
-            
-            //System.out.println(switcher);
-            
-            switch (switcher){
-                
-                case "Texto":
-                    
-                  types[i] = java.lang.String.class;
-                    
-                break;
-                
-                case "Numero":
-                    
-                  types[i] = java.lang.Integer.class;
-                    
-                break;
-                    
-                case "Fecha":
-                    
-                  types[i] = java.lang.Object.class;
-                    
-                break;
-                    
-                case "Combo":
-                    
-                  types[i] = java.lang.Object.class;
-                    
-                break;
-               
+            if(viewT == false){
+                          
+                if("Combo".equals(rs.getString(1).substring(0, 5))){
+
+                   switcher = "Combo";
+
+                }else{
+
+                   switcher = rs.getString(1);
+
+                }
+
+                //System.out.println(switcher);
+
+                switch (switcher){
+
+                    case "Texto":
+
+                      types[i] = java.lang.String.class;
+
+                    break;
+
+                    case "Numero":
+
+                      types[i] = java.lang.Integer.class;
+
+                    break;
+
+                    case "Fecha":
+
+                      types[i] = java.lang.Object.class;
+
+                    break;
+
+                    case "Combo":
+
+                      types[i] = java.lang.Object.class;
+
+                    break;
+
+                }
             }
             i++;
         }
@@ -262,7 +266,6 @@ public class MainScreenDB {
         
         return canEdit;
     }
-    
     
     public void CellFormats(String Report) throws SQLException{
         
@@ -383,6 +386,95 @@ public class MainScreenDB {
             }
         
         }
+        DynmicTableST(Report);
+    }
+    
+    public void GenerateSqlDB(String Report) throws SQLException{
+        
+        sql = "SELECT NOMBRE_COLUMNA FROM GEN_COLUMNAS WHERE NOMBRE_TABLA = '"+Report+"' ORDER BY ORDEN ASC";
+        rs = statement.executeQuery(sql);
+        int sizeH = 0;
+        rs.last();
+        sizeH = rs.getRow();
+        rs.beforeFirst();
+        
+        int i= 0;
+
+        String[] Columnas = new String[sizeH];
+        String[] types = new String[sizeH];
+        String switcher = "";
+        
+        while(rs.next()){
+            
+            Columnas[i] = rs.getString(1);
+            i++;
+            
+        }
+        
+        i = 0;
+        
+        sql = "SELECT TIPO_DATO FROM GEN_COLUMNAS WHERE NOMBRE_TABLA = '"+Report+"' ORDER BY ORDEN ASC";
+        
+        rs = statement.executeQuery(sql);
+        
+        while(rs.next()){
+            
+           if("Combo".equals(rs.getString(1).substring(0, 5))){
+
+                   switcher = "Combo";
+
+                }else{
+
+                   switcher = rs.getString(1);
+
+                }
+
+                //System.out.println(switcher);
+
+                switch (switcher){
+
+                    case "Texto":
+
+                      types[i] = "VARCHAR2(250)";
+
+                    break;
+
+                    case "Numero":
+
+                      types[i] = "DECIMAL(10,2)";
+
+                    break;
+
+                    case "Fecha":
+
+                      types[i] = "DATE";
+
+                    break;
+
+                    case "Combo":
+
+                      types[i] = "VARCHAR2(250)";
+
+                    break;
+
+                }
+            
+            i++;
+            
+        }
+        
+        String SQL = "SELECT";
+        
+        for(int j=0;j<Columnas.length;j++){
+            
+           SQL += " CAST( "+Columnas[j]+" AS "+types[j]+" ) AS "+Columnas[j]+","; 
+  
+        }
+        
+        SQL += " FROM GEN_DATOS D, GEN_COLUMNAS C where D.NOMBRE_TABLA = C.NOMBRE_TABLA AND D.ID_COLUMNA = C.ID AND D.NOMBRE_TABLA='BASE' ORDER BY D.ID_REGISTRO, C.ORDEN ";
+        
+        System.out.println(SQL);
+        
     }
     
     public String[] Lists(String LName) throws SQLException{

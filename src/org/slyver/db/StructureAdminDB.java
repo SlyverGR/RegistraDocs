@@ -72,7 +72,7 @@ public class StructureAdminDB {
         if(result[1] != "" || result[2] != "" || "" != result[3]){
         sql = "MERGE INTO GEN_USERS USING dual ON ( ID="+result[0]+" ) \n" +
         "WHEN MATCHED THEN UPDATE SET USUARIO='"+result[1]+"' , CONTRASENA='"+result[2]+"', COMENTARIOS='"+result[3]+"' \n" +
-        "WHEN NOT MATCHED THEN INSERT (USUARIO,CONTRASENA,sID_EMPRESA,COMENTARIOS) \n" +
+        "WHEN NOT MATCHED THEN INSERT (USUARIO,CONTRASENA,ID_EMPRESA,COMENTARIOS) \n" +
         "VALUES ( '"+result[1]+"', '"+result[2]+"', '"+LoginDb.useremp+"', '"+result[3]+"')";
         System.out.println(sql);
         statement.executeUpdate(sql);

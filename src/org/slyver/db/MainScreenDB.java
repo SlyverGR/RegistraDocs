@@ -274,8 +274,8 @@ public class MainScreenDB {
         
         int i = 1;
         
-        dynamicTable.getColumnModel().getColumn(0).setPreferredWidth(5);
-        dynamicTable.getColumnModel().getColumn(0).setResizable(false);
+        dynamicTable.getColumnModel().getColumn(0).setPreferredWidth(25);
+        dynamicTable.getColumnModel().getColumn(0).setResizable(true);
         
         List Combos = new ArrayList<>();
         List Indexs = new ArrayList<>();
@@ -289,7 +289,7 @@ public class MainScreenDB {
         while(rs.next()){
             
             dynamicTable.getColumnModel().getColumn(i).setPreferredWidth(rs.getInt(2));
-            dynamicTable.getColumnModel().getColumn(i).setResizable(false);
+            dynamicTable.getColumnModel().getColumn(i).setResizable(true);
             
             if("Combo".equals(rs.getString(1).substring(0, 5))){
                Indexs.add(i);

@@ -72,6 +72,7 @@ public class MainScreenUI extends javax.swing.JFrame {
 
             }
         ));
+        dynamicTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         jScrollPane1.setViewportView(dynamicTable);
 
         jLabel2.setText("Seleccionar Reporte");

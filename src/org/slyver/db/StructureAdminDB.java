@@ -250,21 +250,22 @@ public class StructureAdminDB {
   }
     
   public void SaveColumnsTableDB(Object[][] UserList) throws SQLException{
-      
+     
+    int j = 1;
       
     for (Object[] result : UserList) {
-        if(result[1] != "" || result[2] != "" || result[3] != "" || result[4] != "" || result[5] != ""){
+        if(result[1] != "" || result[2] != "" || result[3] != "" || result[4] != "" ){
         
         String[] uid = result[4].toString().split("-");
             
         sql = "MERGE INTO GEN_COLUMNAS USING dual ON ( ID="+result[0]+" ) \n" +
-        "WHEN MATCHED THEN UPDATE SET NOMBRE_COLUMNA='"+result[1]+"', TIPO_DATO='"+result[2]+"', TAMANO='"+result[3]+"', ID_USUARIO='"+Integer.parseInt(uid[0].trim())+"', USER_NAME='"+uid[1].trim()+"', ORDEN="+result[5]+" \n" +
+        "WHEN MATCHED THEN UPDATE SET NOMBRE_COLUMNA='"+result[1]+"', TIPO_DATO='"+result[2]+"', TAMANO='"+result[3]+"', ID_USUARIO='"+Integer.parseInt(uid[0].trim())+"', USER_NAME='"+uid[1].trim()+"', ORDEN="+j+" \n" +
         "WHEN NOT MATCHED THEN INSERT (NOMBRE_TABLA, NOMBRE_COLUMNA, TIPO_DATO, ID_USUARIO, TAMANO, ID_EMPRESA, USER_NAME, ORDEN) \n" +
-        "VALUES ( '"+StructureAdminUI.NewTable.getText()+"', '"+result[1]+"', '"+result[2]+"', "+Integer.parseInt(uid[0].trim())+", "+result[3]+", '"+LoginDb.useremp+"', '"+uid[1].trim()+"', "+result[5]+" )";
+        "VALUES ( '"+StructureAdminUI.NewTable.getText()+"', '"+result[1]+"', '"+result[2]+"', "+Integer.parseInt(uid[0].trim())+", "+result[3]+", '"+LoginDb.useremp+"', '"+uid[1].trim()+"', "+j+" )";
         System.out.println(sql);
         statement.executeUpdate(sql);
         }
-        
+        j++;
     }
     TablesListsDB();
     ListColumnsDB(StructureAdminUI.NewTable.getText());

@@ -5,8 +5,6 @@
  */
 package org.slyver.db;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import static org.slyver.db.oracledb.*;

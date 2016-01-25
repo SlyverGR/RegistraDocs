@@ -5,10 +5,33 @@
  */
 package org.slyver.ui;
 
+import java.awt.Cursor;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DragSource;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.activation.ActivationDataFlavor;
+import javax.activation.DataHandler;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.DefaultCellEditor;
+import javax.swing.DropMode;
+import javax.swing.JComponent;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.TransferHandler;
+import static javax.swing.TransferHandler.MOVE;
+import javax.swing.table.DefaultTableModel;
 import org.slyver.db.StructureAdminDB;
 import org.slyver.runtime.StructureAdmin;
 
@@ -17,7 +40,7 @@ import org.slyver.runtime.StructureAdmin;
  * @author Andres
  */
 public class StructureAdminUI extends javax.swing.JFrame {
-
+    private final TransferHandler handler = new TableRowTransferHandler();
     /**
      * Creates new form StructureAdmin
      * @throws java.sql.SQLException
@@ -81,17 +104,17 @@ public class StructureAdminUI extends javax.swing.JFrame {
 
         TablaColumnas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                { new Integer(0), null, "", null, null, null}
+                { new Integer(0), null, "", null, null}
             },
             new String [] {
-                "ID", "Nombre Columna", "Tipo Dato", "Tamaño", "Usuario", "Orden"
+                "ID", "Nombre Columna", "Tipo Dato", "Tamaño", "Usuario"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true, true
+                false, true, true, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -107,6 +130,21 @@ public class StructureAdminUI extends javax.swing.JFrame {
                 TablaColumnasKeyPressed(evt);
             }
         });
+        TablaColumnas.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        TablaColumnas.setTransferHandler(handler);
+        TablaColumnas.setDropMode(DropMode.INSERT_ROWS);
+        TablaColumnas.setDragEnabled(true);
+        TablaColumnas.setFillsViewportHeight(true);
+        //table.setAutoCreateRowSorter(true); //XXX
+
+        //Disable row Cut, Copy, Paste
+        ActionMap map = TablaColumnas.getActionMap();
+        AbstractAction dummy = new AbstractAction() {
+            @Override public void actionPerformed(ActionEvent e) { /* Dummy action */ }
+        };
+        map.put(TransferHandler.getCutAction().getValue(Action.NAME),   dummy);
+        map.put(TransferHandler.getCopyAction().getValue(Action.NAME),  dummy);
+        map.put(TransferHandler.getPasteAction().getValue(Action.NAME), dummy);
         jScrollPane2.setViewportView(TablaColumnas);
         if (TablaColumnas.getColumnModel().getColumnCount() > 0) {
             TablaColumnas.getColumnModel().getColumn(0).setResizable(false);
@@ -117,8 +155,6 @@ public class StructureAdminUI extends javax.swing.JFrame {
             TablaColumnas.getColumnModel().getColumn(3).setResizable(false);
             TablaColumnas.getColumnModel().getColumn(4).setResizable(false);
             TablaColumnas.getColumnModel().getColumn(4).setCellEditor(new DefaultCellEditor(UserPermision));
-            TablaColumnas.getColumnModel().getColumn(5).setResizable(false);
-            TablaColumnas.getColumnModel().getColumn(5).setPreferredWidth(20);
         }
 
         TableList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "--" }));
@@ -559,6 +595,8 @@ public class StructureAdminUI extends javax.swing.JFrame {
         });
     }
 
+ 
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton DelUser;
     public static javax.swing.JComboBox EmpresasAdmin;
@@ -588,4 +626,95 @@ public class StructureAdminUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     public static javax.swing.JTable userTable;
     // End of variables declaration//GEN-END:variables
+}
+class TableRowTransferHandler extends TransferHandler {
+    private final DataFlavor localObjectFlavor;
+    private int[] indices;
+    private int addIndex = -1; //Location where items were added
+    private int addCount; //Number of items added.
+    private JComponent source;
+
+    public TableRowTransferHandler() {
+        super();
+        localObjectFlavor = new ActivationDataFlavor(Object[].class, DataFlavor.javaJVMLocalObjectMimeType, "Array of items");
+    }
+    @Override protected Transferable createTransferable(JComponent c) {
+        source = c;
+        JTable table = (JTable) c;
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        List<Object> list = new ArrayList<>();
+        indices = table.getSelectedRows();
+        for (int i: indices) {
+            list.add(model.getDataVector().elementAt(i));
+        }
+        Object[] transferedObjects = list.toArray();
+        return new DataHandler(transferedObjects, localObjectFlavor.getMimeType());
+    }
+    @Override public boolean canImport(TransferHandler.TransferSupport info) {
+        JTable table = (JTable) info.getComponent();
+        boolean isDropable = info.isDrop() && info.isDataFlavorSupported(localObjectFlavor);
+        //XXX bug?
+        table.setCursor(isDropable ? DragSource.DefaultMoveDrop : DragSource.DefaultMoveNoDrop);
+        return isDropable;
+    }
+    @Override public int getSourceActions(JComponent c) {
+        return MOVE; //TransferHandler.COPY_OR_MOVE;
+    }
+    @Override public boolean importData(TransferHandler.TransferSupport info) {
+        if (!canImport(info)) {
+            return false;
+        }
+        TransferHandler.DropLocation tdl = info.getDropLocation();
+        if (!(tdl instanceof JTable.DropLocation)) {
+            return false;
+        }
+        JTable.DropLocation dl = (JTable.DropLocation) tdl;
+        JTable target = (JTable) info.getComponent();
+        DefaultTableModel model = (DefaultTableModel) target.getModel();
+        int index = dl.getRow();
+        //boolean insert = dl.isInsert();
+        int max = model.getRowCount();
+        if (index < 0 || index > max) {
+            index = max;
+        }
+        addIndex = index;
+        target.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        try {
+            Object[] values = (Object[]) info.getTransferable().getTransferData(localObjectFlavor);
+            if (Objects.equals(source, target)) {
+                addCount = values.length;
+            }
+            for (int i = 0; i < values.length; i++) {
+                int idx = index++;
+                model.insertRow(idx, (Vector) values[i]);
+                target.getSelectionModel().addSelectionInterval(idx, idx);
+            }
+            return true;
+        } catch (UnsupportedFlavorException | IOException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+    @Override protected void exportDone(JComponent c, Transferable data, int action) {
+        cleanup(c, action == MOVE);
+    }
+    private void cleanup(JComponent c, boolean remove) {
+        if (remove && indices != null) {
+            c.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            DefaultTableModel model = (DefaultTableModel) ((JTable) c).getModel();
+            if (addCount > 0) {
+                for (int i = 0; i < indices.length; i++) {
+                    if (indices[i] >= addIndex) {
+                        indices[i] += addCount;
+                    }
+                }
+            }
+            for (int i = indices.length - 1; i >= 0; i--) {
+                model.removeRow(indices[i]);
+            }
+        }
+        indices  = null;
+        addCount = 0;
+        addIndex = -1;
+    }
 }

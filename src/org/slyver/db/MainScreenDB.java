@@ -18,7 +18,6 @@ import static org.slyver.ui.MainScreenUI.dynamicTable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFormattedTextField;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  *
@@ -26,7 +25,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class MainScreenDB {
     
-    public void DynmicTableST(String Report) throws SQLException{
+    public void DynmicTableST(final String Report) throws SQLException{
         
         String[] Columns=  ColumnsStructure(Report);
         Object[][] Rows= RowsStructure(Report);

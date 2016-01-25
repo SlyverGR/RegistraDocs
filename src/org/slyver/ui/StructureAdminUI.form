@@ -166,7 +166,7 @@
             <Component class="javax.swing.JTable" name="TablaColumnas">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="6" rowCount="1">
+                  <Table columnCount="5" rowCount="1">
                     <Column editable="false" title="ID" type="java.lang.Integer">
                       <Data value="0"/>
                     </Column>
@@ -176,7 +176,6 @@
                     </Column>
                     <Column editable="true" title="Tama&#xf1;o" type="java.lang.Integer"/>
                     <Column editable="true" title="Usuario" type="java.lang.Object"/>
-                    <Column editable="true" title="Orden" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -210,11 +209,6 @@
                       </Editor>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="20" resizable="false">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
                   </TableColumnModel>
                 </Property>
                 <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
@@ -225,6 +219,7 @@
                 <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="TablaColumnasKeyPressed"/>
               </Events>
               <AuxValues>
+                <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="TablaColumnas.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);&#xa;        TablaColumnas.setTransferHandler(handler);&#xa;        TablaColumnas.setDropMode(DropMode.INSERT_ROWS);&#xa;        TablaColumnas.setDragEnabled(true);&#xa;        TablaColumnas.setFillsViewportHeight(true);&#xa;        //table.setAutoCreateRowSorter(true); //XXX&#xa;&#xa;        //Disable row Cut, Copy, Paste&#xa;        ActionMap map = TablaColumnas.getActionMap();&#xa;        AbstractAction dummy = new AbstractAction() {&#xa;            @Override public void actionPerformed(ActionEvent e) { /* Dummy action */ }&#xa;        };&#xa;        map.put(TransferHandler.getCutAction().getValue(Action.NAME),   dummy);&#xa;        map.put(TransferHandler.getCopyAction().getValue(Action.NAME),  dummy);&#xa;        map.put(TransferHandler.getPasteAction().getValue(Action.NAME), dummy);"/>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
               </AuxValues>
             </Component>
